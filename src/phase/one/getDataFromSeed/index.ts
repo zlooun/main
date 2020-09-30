@@ -1,16 +1,12 @@
 import axios from "axios";
 import { v4 as uuid} from "uuid";
-import { communication, phrases } from "index";
-import { config } from "index";
-
-
+import { communication, phrases } from "app";
+import { config } from "app";
 
 
 const url = config.main().url;
 
-
 export default () => {
-
   let query = `mutation {
     getDataFromSeed(input: {
       uuid:"${uuid()}"
@@ -28,9 +24,7 @@ export default () => {
     }
   }`
 
-
   communication.push("/communication[]/requests", { query }, true);
-  
-  return axios.post(url, { query });
 
+  return axios.post(url, { query });
 };
