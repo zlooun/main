@@ -1,15 +1,15 @@
 import axios from "axios";
 import { v4 as uuid} from "uuid";
-import { communication, phrases } from "index";
-import { config } from "index";
 
 
+import { communicationDb, config } from "../../../index";
 
 
-const url = config.main().url;
 
 
 export default () => {
+
+  const url = config.main().url;
 
   let query = `mutation {
     getDataFromSeed(input: {
@@ -21,6 +21,7 @@ export default () => {
       seedPhrase:"trial stomach spider document box deputy bread prepare allow mammal text pink"
     }){
       seed
+      seedPhrase
       masterPublicKey
       masterPrivateKey
       masterAccountPrivateKey
@@ -29,7 +30,7 @@ export default () => {
   }`
 
 
-  communication.push("/communication[]/requests", { query }, true);
+  communicationDb.push("/communication[]/requests", { query }, true);
   
   return axios.post(url, { query });
 

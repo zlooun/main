@@ -1,4 +1,6 @@
-import one from "./one";
+import keysWork from "./keysWork";
+import workWithUser from "./workWithUser";
+import createAccaunt from "./createAccaunt";
 
 
 
@@ -6,7 +8,9 @@ import one from "./one";
 export default () => {
 
   return {
-    "one": one,
+    "keysWork": keysWork,
+    "workWithUser": workWithUser,
+    "createAccaunt": createAccaunt,
   };
 
 };
