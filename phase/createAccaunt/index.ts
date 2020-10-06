@@ -1,59 +1,87 @@
 import { communicationDb, usersDb } from "../../index";
-import createUser from "./createUser";
-import authorization from "./authorization";
-
-
-import passwordGenerator from "password-generator";
-
-
-const randomEmail = require("random-email");
+import importAddressesOrPublicKey from "./importAddressesOrPublicKey";
+import importMasterPublicKey from "./importMasterPublicKey";
 
 
 
 
-export default () => {
+export default (data: any) => {
 
-  const login = passwordGenerator(6, true, /\w/);
-  const email = randomEmail({ domain: "test.be" });
-  const password = passwordGenerator(12, false);
-  
+  return importAddressesOrPublicKey()
+  .then(async (response: any) => {
 
-  console.log(login);
-  console.log(email);
-  console.log(password);
-
-  
-  return createUser(login, email, password)
-  .then((request: any) => {
-
-    communicationDb.push(`/communication[${communicationDb.count("/communication") - 1}]/responces`, request.data, true);
+    communicationDb.push(`/communication[${communicationDb.count("/communication") - 1}]/responces`, response.data, true);
     
-    const receivedTokens = request.data.data.createUser;
 
-    const user = {
-      login,
-      email,
-      password,
-      tokens: receivedTokens
-    }
-
-    usersDb.push("/users[]/", user, true);
+    const testAcc = response.data.data.importAddressesOrPublicKey;
 
 
-    return authorization(login, email, password)
-    .then((request: any) => {
+    return new Promise((resolve) => {
 
-      communicationDb.push(`/communication[${communicationDb.count("/communication") - 1}]/responces`, request.data, true);
-      
-      const receivedTokens = request.data.data.authorization;
+      let setTimeou = setTimeout(function loop() {
 
-      return receivedTokens;
-  
-    }, err);
+
+        
+
+        importMasterPublicKey(data.dataFromSeed.masterAccountPublicKey)
+        .then((response) => {
+
+          communicationDb.push(`/communication[${communicationDb.count("/communication") - 1}]/responces`, response.data, true);
+
+
+          console.log(response.data)
+    
+          if (!response.data.data){
+            setTimeou = setTimeout(loop, 10000);
+            return;
+          }
+    
+    
+          const receivedDerivatedKeys = data.receivedDerivatedKeys;
+          const importedAdresses = response.data.data.importMasterPublicKey.addresses.nodes;
+    
+          console.log(receivedDerivatedKeys);
+          console.log(importedAdresses);
+          
+    
+    
+          if (receivedDerivatedKeys.length !== importedAdresses.length){
+            console.log("Different number of addresses");
+            return;
+          }
+    
+    
+          let derivatedAddresses: any = [];
+    
+          receivedDerivatedKeys.forEach((element: any) => {
+            derivatedAddresses.push(element.address);
+          });
+    
+          for (const element of importedAdresses) {
+            
+            if (!derivatedAddresses.includes(element.address)) {
+              console.log(`The address doesn't match: ${element.address}`);
+              return;
+            }
+    
+          }
+    
+    
+          console.log(true);
+    
+          
+          resolve(derivatedAddresses);
+
+        });
+
+
+      }, 0);
+
+    });
 
 
   }, err);
-  
+
 
 };
 

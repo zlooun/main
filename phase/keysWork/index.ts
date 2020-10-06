@@ -10,31 +10,40 @@ export default () => {
 
 
   return generateSeedPhrase()
-  .then((request: any) => {
+  .then((response: any) => {
   
-    communicationDb.push(`/communication[${communicationDb.count("/communication") - 1}]/responces`, request.data, true);
-    phrasesDb.push("/phrases[]", request.data.data.generateSeedPhrase.seedPhrase, true);
+    communicationDb.push(`/communication[${communicationDb.count("/communication") - 1}]/responces`, response.data, true);
+
+
+    const seedPhrase = response.data.data.generateSeedPhrase.seedPhrase;
+
+    phrasesDb.push("/phrases[]", seedPhrase, true);
 
     
-    return getDataFromSeed()
-    .then((request: any) => {
+    return getDataFromSeed(seedPhrase)
+    .then((response: any) => {
     
-      communicationDb.push(`/communication[${communicationDb.count("/communication") - 1}]/responces`, request.data, true);
+      communicationDb.push(`/communication[${communicationDb.count("/communication") - 1}]/responces`, response.data, true);
       
 
-      const getDataFromSeed = request.data.data.getDataFromSeed;
+      const dataFromSeed = response.data.data.getDataFromSeed;
       
     
-      return derivateKeys(getDataFromSeed.masterAccountPrivateKey, getDataFromSeed.sidPhrase)
-      .then((request: any) => {
+      return derivateKeys(dataFromSeed.masterAccountPrivateKey, dataFromSeed.sidPhrase)
+      .then((response: any) => {
 
-        communicationDb.push(`/communication[${communicationDb.count("/communication") - 1}]/responces`, request.data, true);
+        communicationDb.push(`/communication[${communicationDb.count("/communication") - 1}]/responces`, response.data, true);
         
-        const receivedDerivatedKeys = request.data.data.derivateKeys;
+        const receivedDerivatedKeys = response.data.data.derivateKeys;
   
         derivatedKeysDb.push("/keys[]", receivedDerivatedKeys, true);
   
-        return 2;
+        console.log(dataFromSeed);
+
+        return {
+          dataFromSeed,
+          receivedDerivatedKeys
+        }
   
       }, err);
     

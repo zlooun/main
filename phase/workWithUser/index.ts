@@ -24,11 +24,17 @@ export default () => {
 
   
   return createUser(login, email, password)
-  .then((request: any) => {
+  .then((response: any) => {
 
-    communicationDb.push(`/communication[${communicationDb.count("/communication") - 1}]/responces`, request.data, true);
+    communicationDb.push(`/communication[${communicationDb.count("/communication") - 1}]/responces`, response.data, true);
+
+    if (!response.data.data){
+      console.log(response.data);
+      return Promise.reject();
+    }
     
-    const receivedTokens = request.data.data.createUser;
+    
+    const receivedTokens = response.data.data.createUser;
 
     const user = {
       login,
@@ -40,12 +46,12 @@ export default () => {
     usersDb.push("/users[]/", user, true);
 
 
-    return authorization(login, email, password)
-    .then((request: any) => {
+    return authorization(login, password)
+    .then((response: any) => {
 
-      communicationDb.push(`/communication[${communicationDb.count("/communication") - 1}]/responces`, request.data, true);
+      communicationDb.push(`/communication[${communicationDb.count("/communication") - 1}]/responces`, response.data, true);
       
-      const receivedTokens = request.data.data.authorization;
+      const receivedTokens = response.data.data.authorization;
 
       return receivedTokens;
   

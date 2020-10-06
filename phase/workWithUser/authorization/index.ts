@@ -1,13 +1,10 @@
-import axios from "axios";
 import { v4 as uuid} from "uuid";
-import { communicationDb, config } from "../../../index";
+import { instance, communicationDb } from "../../../index";
 
 
 
 
-export default (login: string, email: string, password: string) => {
-
-  const url = config.main().url;
+export default (login: string, password: string) => {
 
   let query = `mutation {
     authorization(input: {
@@ -23,6 +20,6 @@ export default (login: string, email: string, password: string) => {
 
   communicationDb.push("/communication[]/requests", { query }, true);
   
-  return axios.post(url, { query });
+  return instance.post("/", { query });
 
 };

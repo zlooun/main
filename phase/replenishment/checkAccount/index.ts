@@ -1,20 +1,25 @@
 import { v4 as uuid} from "uuid";
+
+
 import { instance, communicationDb } from "../../../index";
 
 
 
 
-export default (login: string, email: string, password: string) => {
+export default (id: string) => {
 
-  let query = `mutation {
-    createUser(input: {
+  let query = `query {
+    account(input: {
       uuid:"${uuid()}"
-      login:"${ login }"
-      email:"${ email }"
-      password:"${ password }"
+      id:"93e57afc-964f-4fca-8369-ccccebe1e44f"
     }){
-      accessToken
-      refreshToken
+      id
+      blockchain
+      totalBalance{
+        LITECOIN{
+          balance
+        }
+      }
     }
   }`
 
